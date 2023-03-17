@@ -1,17 +1,41 @@
 # How to use the apps
 
-Please first install node and other packages on your instances.
+Silahkan install node dan beberapa package yang di perlukan untuk melakukan konfigurasi.
 
-Run the following command as a user with sudo privileges to download and execute the NodeSource installation script:
+silahkan running script berikut untuk melakukan installasi node dan bebepada package yang di perlukan lainya :
 ```bash
-apt install update
+sudo apt update
 curl -sL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install nodejs -y
+sudo apt-get install rsync build-essential git mysql-client -y
 ```
 
-Once the NodeSource repository is enabled, install Node.js and npm:
+Run the following command as a user installation script:
 ```bash
-sudo apt install nodejs
-sudo apt install build-essential
+cd /home/ubuntu
+sudo apt install binutils -y
+git clone https://github.com/aws/efs-utils
+cd efs-utils
+./build-deb.sh
+sudo apt-get -y install ./build/amazon-efs-utils*deb
+cd /home/ubuntu
+mkdir efs
+sudo mount -t efs -o tls fs-0ef13ba7dec46de8b:/ /home/ubuntu/efs
+df -h
+```
+Ubah EFS ID <script> sudo mount -t efs -o tls [efs id]> efs </script> atau bisa copy paste dari EFS console. Agar EFS dapat Terkoneksi secara otomatis bisa membuka fstab di etc dengan perintah: 
+```bash
+sudo nano /etc/fstab
+```
+lalu tambahkan script berikut :
+```bash
+fs-0ef13ba7dec46de8b:/ /home/ubuntu/efs efs _netdev,noresvport,tls 0 0
+```
+
+kita installasi aplikasi menggunakan perintah git sebagai berikut :
+```bash
+cd /home/ubuntu/efs && git clone https://github.com/adinur21/ukk.git
+cd ukk/ && npm install
 ```
 
 Install `node_modules` on this project
@@ -21,9 +45,6 @@ Install `node_modules` on this project
   npm install -g nodemon
   npm install -g cors
   npm install -g body-parser
-
-  # use yarn
-  yarn
 ```
 
 [Install node and npm](https://linuxize.com/post/how-to-install-node-js-on-ubuntu-22-04/)
@@ -34,13 +55,6 @@ Install `node_modules` on this project
 
 [Install cors](https://www.thelinuxfaq.com/npm/npm-packages/cors#:~:text=%24%20sudo%20npm%20install%20cors%20%24%20sudo%20npm,command%20as%20below%2C%20%24%20sudo%20npm%20update%20cors)
 
-[Install body parser](https://www.thelinuxfaq.com/npm/npm-packages/body-parser)
-
-Second please install git and clone the apps
-```bash
-apt install git -y
-git clone https://github.com/adinur21/ukk
-```
 
 After that, you can setup the database. go to directory model and edit `dbConnection.js`.
 
@@ -64,6 +78,9 @@ Make sure your SQL engine is 8.0.XX
   
  #show database
  show databases;
+
+ # Create the cloud_api database
+ create database cloud_api;
  
   # create table
   CREATE TABLE guru (
@@ -79,6 +96,7 @@ Make sure your SQL engine is 8.0.XX
   # insert guru
 
   INSERT INTO guru (nama_guru, mapel_guru, sekolah_guru) VALUES ('Adi','cloud','SMK Telkom Malang');
+  INSERT INTO guru (nama_guru, mapel_guru, sekolah_guru) VALUES ('OmTegar','Kuli Jawa','STM Kuli Jawa');
   
   # update guru
   UPDATE guru SET nama_guru = ?, mapel_guru = ?, sekolah_guru = ? WHERE id_guru = ?;
